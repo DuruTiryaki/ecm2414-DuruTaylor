@@ -3,7 +3,7 @@ import java.util.List;
 
 public class Player {
     private int playerId; //number of the player
-    private String playerName; //player name will be player + playerId
+    private String playerName; //player name will be "player + playerId"
     private List<Card> hand; //player's cards
 
     public Player(int playerId) {
@@ -20,28 +20,28 @@ public class Player {
         return playerName;
     }
 
-    public synchronized addCardToHand(Card card){
+    public synchronized void addCardToHand(Card card) {
         if (hand.size() < 4) {
             hand.add(card);
         }
     }
 
-    public synchronized Card discardCard(int preferredCardToDiscard){
-        if(hand.size() < 4) {
-            return null;
+    public synchronized Card discardCard(int preferredCardToDiscard) {
+        Card resultCard = null;
+        if (hand.size() < 4) {
             for (Card card : hand) {
                 if (card.getValue() == preferredCardToDiscard) {
                     hand.remove(card);
-                    return card;
+                    resultCard = card;
+                } else {
+                    return hand.remove(0);
                 }
-        else{
-            return hand.remove(0);
-            }
             }
         }
+        return resultCard;
     }
 
-    public List<Card> getHand(){ //to see the cards that the player has
+    public List<Card> getHand() { //to see the cards that the player has
 
         return new ArrayList<>(hand);
     }
