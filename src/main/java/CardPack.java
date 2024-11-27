@@ -11,6 +11,9 @@ public class CardPack {
         cards = new ArrayList<>();
     }
 
+    public List<Card> getCards() {
+        return cards;
+    }
 
     // Shuffles cards
     public void shuffle() {
@@ -29,5 +32,16 @@ public class CardPack {
     // Returns the remaining cards
     public int remainingCards() {
         return cards.size();
+    }
+
+    public void addCard(Card card) {
+        cards.add(card);
+    }
+
+    public void listCards() {
+        System.out.println("Listing card pack:");
+        for (Card card: cards){
+            System.out.print(card.getValue() + " ");
+        }
     }
 }

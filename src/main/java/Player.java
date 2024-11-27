@@ -4,7 +4,12 @@ import java.util.List;
 public class Player {
     private int playerId; //number of the player
     private String playerName; //player name will be "player + playerId"
-    private List<Card> hand; //player's cards
+    private List<Card> hand; //player's cards (4 cards)
+    private CardDeck takenDeck;
+    private CardDeck givenDeck;
+    //elini kontrol et, 4 kart da aynıysa kazandım de metodları
+
+
 
     public Player(int playerId) {
         this.playerId = playerId;
@@ -46,4 +51,21 @@ public class Player {
         return new ArrayList<>(hand);
     }
 
+    public CardDeck getTakenDeck() {
+        return takenDeck;
+    }
+
+    public void setTakenDeck(CardDeck takenDeck) {
+        this.takenDeck = takenDeck;
+    }
+
+    public CardDeck getGivenDeck() {
+        return givenDeck;
+    }
+
+    public void setGivenDeck(CardDeck givenDeck) {
+        this.givenDeck = givenDeck;
+    }
+
+    // TODO: player in elinde yer alan tüm Cardları listele.
 }
