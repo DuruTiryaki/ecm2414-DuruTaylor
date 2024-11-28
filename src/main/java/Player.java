@@ -7,8 +7,7 @@ public class Player {
     private List<Card> hand; //player's cards (4 cards)
     private CardDeck takenDeck;
     private CardDeck givenDeck;
-    //elini kontrol et, 4 kart da aynıysa kazandım de metodları
-
+    //elini kontrol et metodu
 
 
     public Player(int playerId) {
@@ -67,5 +66,25 @@ public class Player {
         this.givenDeck = givenDeck;
     }
 
-    // TODO: player in elinde yer alan tüm Cardları listele.
+    public synchronized List<Card> listCardsInHand() {
+        return new ArrayList<>(hand);
+    }
+
+    public void checkWinningHand() {
+        if (hand == null || hand.size() != 4) {
+            return;
+        }
+        int firstCardValue = hand.get(0).getValue();
+        boolean allSame = true;
+
+        for (Card card : hand) {
+            if (card.getValue() != firstCardValue) {
+                allSame = false;
+                break;
+            }
+        }
+        if (allSame) {
+            System.out.println(playerName + " wins");
+        }
+    }
 }

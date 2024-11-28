@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class CardDeck {
@@ -18,6 +19,9 @@ public class CardDeck {
     public void addToBottom(Card card){
 
     }
-    // TODO: deck in Cardlarının tümünü listeleyen metodu yaz.
+
+    public synchronized List<Card> listCardsInDeck() {
+        return new ArrayList<>(cards);
+    }
 
 }
