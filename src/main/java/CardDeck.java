@@ -3,21 +3,27 @@ import java.util.List;
 
 public class CardDeck {
     private List<Card> cards;
+    private int deckID;
 
     public List<Card> getCards() {
         return cards;
     }
 
-    public void setCards(List<Card> cards) {
+    public CardDeck(List<Card> cards, int deckID) {
         this.cards = cards;
+        this.deckID = deckID;
     }
 
-    public Card getFromTop(){
-        return null;
+    public synchronized Card drawCard(){
+        return cards.remove(0);
     }
 
-    public void addToBottom(Card card){
+    public synchronized void addToBottom(Card card){
+        cards.add(card);
+    }
 
+    public int getDeckID(){
+        return deckID;
     }
 
     public synchronized List<Card> listCardsInDeck() {
