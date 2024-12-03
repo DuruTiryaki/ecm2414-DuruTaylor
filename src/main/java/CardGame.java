@@ -1,102 +1,180 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.io.File; // jaImport File Class for file access
+import java.io.FileNotFoundException; // Import for handling errors accessing pack file
+import java.lang.reflect.Array;
+import java.util.*;
 
 public class CardGame {
-    public static void main(String[] args) {
-
-        // TODO:
-        // List<CardDeck> n tane
-        // List<Player> n tane
-        // CardPack -> 8n cards ->  drawCard() çekerek List<CardDeck> ve List<Player> kartlarını dağıt.
-        // (her yere (Deck ve player.) 4 adet)
-        // tüm decklerin içeriğini listele, tüm playerların elini listele.
-        // two.txt deki tüm elemanları sırasıyla Player1 (4 adet) Player2 (4 adet) Deck1(4 adet) Deck2 (4 adet)
-
-
-        Scanner cmdReader = new Scanner(System.in); // Scanner object to handle input
-        int noOfPlayers = 0; // Store Number of players
-        String packFileName; // Store pack file path
-        boolean fileReadFlag = false; // Flag set to true when the pack file is successfully read
-        int noOfCards = 0; // Store total number of cards
-        CardPack cardPack = new CardPack();
-        // Card[] cardArr = null;
-        while (noOfPlayers <= 0) {
-            System.out.println("Please enter the number of players:");
-            try {
-                noOfPlayers = Integer.parseInt(cmdReader.nextLine());
-            } catch (NumberFormatException e) {
-                System.out.println("[!] Invalid Input - Must choose a whole number [!]");
-            }
-            if (noOfPlayers <= 0) {
-                System.out.println("[!] Invalid Input - Must be above zero [!]");
-            }
-        }
-        while (!fileReadFlag) {
-            cardPack = new CardPack();
-            System.out.println("Please enter location of pack to load:");
-            packFileName = cmdReader.nextLine();
-            try {
-                // Create Scanner
-                File fileObj = new File(packFileName);
-                Scanner myReader = new Scanner(fileObj);
-                //First loop to get total number of cards
-                while (myReader.hasNextLine()) {
-                    myReader.nextLine();
-                    noOfCards += 1;
-                }
-                myReader = new Scanner(fileObj); // Reset scanner to first line
-
-                // cardArr = new Card[noOfCards]; // Create Card Array
-                noOfCards = 0; // Reset for use in next loop
-                //Second loop to create the cards - Creates new card for each line in pack.txt
-                while (myReader.hasNextLine()) {
-                    Card card = new Card(Integer.parseInt(myReader.nextLine()));
-                    cardPack.addCard(card);
-                    // cardArr[noOfCards] = card;
-                    noOfCards += 1;
-                }
-                myReader.close();
-
-                // validity check
-                if (isFileValid(cardPack, noOfPlayers)) {
-                    System.out.println("File is valid.");
-                    fileReadFlag = true;
-                } else {
-                    System.out.println("Fİle is not valid.");
-                    fileReadFlag = false;
-                }
-            } catch (FileNotFoundException e) {
-                System.out.println("[!] An error occurred while trying to access " + packFileName + " [!]");
-                fileReadFlag = false;
-            }
-        }
-        cardPack.listCards();
-    }
-
     public static boolean isFileValid(CardPack cardPack, int noOfPlayers) {
         // file elements size  (card size) should equal to 8xnoOfPlayers
         if (cardPack.remainingCards() != (8 * noOfPlayers)) {
             return false;
         }
-        // Elemanların kaç kez tekrarlandığını tutmak için bir HashMap kullanıyoruz
+        // HashMap to keep track of how many times elements are repeated
         Map<Integer, Integer> frequencyMap = new HashMap<>();
 
-        // Diziyi dolaşıp elemanların frekanslarını hesaplıyoruz
+        // Traverse array and increment frequency for each occurence of the relevant card in the hasmap.
         for (Card card : cardPack.getCards()) {
             frequencyMap.put(card.getValue(), frequencyMap.getOrDefault(card.getValue(), 0) + 1);
         }
 
-        // Eğer herhangi bir eleman 4 defa geçiyorsa valid kabul edilir
+        // If a card has a frequency of 4 or above, it is valid.
         for (int frequency : frequencyMap.values()) {
             if (frequency >= 4) {
                 return true; // Valid
             }
         }
 
-        // Hiçbir eleman 4 kez geçmiyorsa valid değil
+        // Otherwise, if a card does not appear 4 or more times, it is invalid.
         return false;
+    }
+
+    public static CardPack cardListToPack(List<Card> listOfCards) {
+        // Create Card Pack object
+        CardPack outputCardPack = new CardPack();
+
+        // For each card give, add it to the pack
+        for(Card targetCard : listOfCards){
+            outputCardPack.addCard(targetCard);
+        }
+
+        // Return that pack
+        return outputCardPack;
+    }
+
+
+    public static void main(String[] args){
+
+        Scanner cmdReader = new Scanner(System.in); // Scanner object to handle input
+        String packFileName; // Store pack file path
+        boolean fileReadFlag = false; // Flag set to true when the pack file is successfully read
+
+        int noOfPlayers = 0; // Store Number of players
+        List<Player> playerList = new ArrayList<>(); // List of all Player Objects
+
+        int noOfCards = 0; // Store total number of cards
+        List<Card> cardList = new ArrayList<>(); // Stores cards from the pack file
+        List<CardDeck> cardDecks = new ArrayList<>(); // List of all card decks
+        CardPack packOfCards = null;
+
+        // Check number of players
+        while(noOfPlayers <= 0){
+            System.out.println("Please enter the number of players:");
+            try {
+                noOfPlayers = Integer.parseInt(cmdReader.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("[!] Invalid Input - Must choose a whole number [!]");
+            }
+
+            if (noOfPlayers <= 1){
+                System.out.println("[!] Invalid Input - Must be above one [!]");
+            }
+        }
+
+        // Get pack file
+        while (!fileReadFlag){
+            System.out.println("Please enter location of pack to load:");
+            packFileName = cmdReader.nextLine();
+            try {
+                // Create Scanner
+                File fileObj = new File(packFileName);
+                Scanner myReader = new Scanner(fileObj);
+
+                //First loop to get total number of cards (this is needed to determine the length of the card array)
+                while (myReader.hasNextLine()) {
+                    myReader.nextLine();
+                    noOfCards += 1;
+                }
+
+                myReader = new Scanner(fileObj); // Reset scanner to first line
+                noOfCards = 0; // Reset for use in next loop
+
+                //Second loop to create the cards - Creates new card for each line in pack.txt
+                while (myReader.hasNextLine()) {
+                    cardList.add(new Card(Integer.parseInt(myReader.nextLine())));
+                    noOfCards += 1;
+                }
+                myReader.close();
+                fileReadFlag = true;
+
+            }
+            // Handler if file not found
+            catch (FileNotFoundException e) {
+                System.out.println("[!] An error occurred while trying to access " + packFileName + " [!]");
+            }
+
+            // Construct the total card pack
+            packOfCards = cardListToPack(cardList);
+
+            // Final checks to ensure the pack file is valid, before proceeding with the game
+            if(fileReadFlag){
+                fileReadFlag = isFileValid(packOfCards, noOfPlayers);
+            }
+        }
+
+        // Shuffle cards
+        packOfCards.shuffle();
+        cardList.clear();
+        for (Card targetCard : packOfCards.getCards()){
+            cardList.add(targetCard);
+        }
+
+        // DECK SETUP
+        // Each deck will have 4 cards, same as the players, because...
+        // The total number of cards is 8n ( 8 * the number of players)
+        // The total number of cards allocated TO PLAYERS will be 4n (4 * the number of players), because each player gets 4 cards each.
+        // That leaves us with 4n cards left (8n - 4n = 4n) as the total number of cards FOR DECKS
+        // Because there is an equal number of decks to players, that means each single deck will have 4 cards (4n / n = 4)
+
+        List<Card> tempDeck = new ArrayList<>();
+
+        for(int deckNum = 0; deckNum < noOfPlayers; deckNum++){
+            for (int i = 0; i < 4; i++){
+                // Collect 4 cards from the total deck
+                tempDeck.add(cardList.remove(0));
+            }
+            // Create a new deck with those 4 cards
+            cardDecks.add(new CardDeck(tempDeck, deckNum + 1));
+            tempDeck.clear();
+        }
+
+        // PLAYER SETUP
+        // Both playerList and cardDecks have the same length
+        // Therefore, we can assign which deck is the 'take deck' and 'give deck' (decks to left and right of player respectively), by using the index.
+        // The 'give deck' (the one the player discards cards to) will have the same index as the player
+        // The 'take deck' (the one the player picks up cards from) will have the index of the player's - 1.
+        // We can then pass these through as references for manipulation by the Player threads.
+
+        // E.G ...[Player N] -> (Deck N) -> [Player 1] -> (Deck 1) -> [Player 2] -> (Deck 2) -> [Player 3] -> (Deck 3)...
+        // ('->' is the direction of cards, N is the number of players)
+
+        // Set up Players
+        for(int playerNum = 0; playerNum < noOfPlayers; playerNum++){
+            playerList.add(new Player(playerNum + 1));
+            playerList.get(playerNum).setGiveDeck(cardDecks.get(playerNum)); // Set the 'give deck' reference to the deck that it shares its index with
+
+            // For the first player, set its 'take deck' to be the last deck in the list
+            if(playerNum == 0){
+                playerList.get(playerNum).setTakeDeck(cardDecks.get(cardDecks.size() - 1));
+            }
+            else{
+                // Otherwise, set the 'take deck' to be the one immediately behind the player.
+                playerList.get(playerNum).setTakeDeck(cardDecks.get(playerNum - 1));
+            }
+        }
+
+        // Each player will be given 4 cards, so do this 4 times.
+        for (int i = 0; i < 4; i++){
+            // Traverse player list and for each player give them a card
+            for(Player targetPlayer : playerList){
+                targetPlayer.addCardToHand(cardList.remove(0));
+            }
+        }
+
+        //Start all Player Threads, this begins the game
+        for (Player targetPlayer : playerList){
+            targetPlayer.start();
+        }
+
+        //TODO: handle thread messaging so when one thread wins, all other threads are notified and end gracefully
     }
 }
