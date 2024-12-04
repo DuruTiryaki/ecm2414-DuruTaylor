@@ -1,6 +1,5 @@
 import java.io.File; // jaImport File Class for file access
 import java.io.FileNotFoundException; // Import for handling errors accessing pack file
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class CardGame {
@@ -175,6 +174,30 @@ public class CardGame {
             targetPlayer.start();
         }
 
-        //TODO: handle thread messaging so when one thread wins, all other threads are notified and end gracefully
+        boolean allThreadsAlive = true;
+        //Thread manager loop. This continuously checks for a thread that has completed. If so, it informs all other threads that player thread has won and stops their execution.
+        while(allThreadsAlive){
+            // For each player object, check that it is still alive
+            for (Player targetPlayer : playerList){
+                // If not, go through each player object and inform them that there has been a winner
+                if(!targetPlayer.isAlive()){
+                    playerList.remove(targetPlayer);
+                    for (Player remainingPlayers : playerList){
+                        // Declare Winner method stops the game loop in the thread from executing further, and informs them of the victor.
+                        remainingPlayers.declareWinner(targetPlayer.getPlayerId());
+                    }
+                    System.out.println(targetPlayer.getPlayerName() + " wins");
+                    allThreadsAlive = false;
+                    break;
+                }
+            }
+            // Sleep to prevent starvation of the child threads.
+            try{
+                Thread.sleep(50);
+            }
+            catch (InterruptedException e){
+                e.printStackTrace();
+            }
+        }
     }
 }
