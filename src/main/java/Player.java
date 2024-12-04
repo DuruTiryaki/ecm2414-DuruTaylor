@@ -8,7 +8,7 @@ public class Player extends Thread{
     private List<Card> hand; //player's cards (4 cards)
     private CardDeck takeDeck;
     private CardDeck giveDeck;
-    private boolean continueGame = true;
+    private volatile boolean continueGame = true; // This needs to be volatile, as the main thread may modify also this if another winner has been declared to discontinue the game.
     private List<String> outputFileContents = new ArrayList<>(); // This contains the lines that will be written to the final output file
     //elini kontrol et metodu
 
@@ -99,6 +99,14 @@ public class Player extends Thread{
         return true;
     }
 
+    // This is called by the main method in CardGame class when a thread other than this one has won the game.
+    public void declareWinner(int winningPlayer){
+        // Stop the main game loop for this thread
+        continueGame = false;
+        // Add the winner to the output file
+        outputFileContents.add("player " + winningPlayer + " has informed " + playerName + " that player " + winningPlayer + " has won");
+    }
+
     public void run() {
         outputFileContents.add(playerName + " initial hand " + getHandString()); // Add initial hand to output file
 
@@ -106,26 +114,34 @@ public class Player extends Thread{
         if(checkWinningHand()){
             continueGame = false;
             outputFileContents.add(playerName + " wins");
-            System.out.println(playerName + " wins");
         }
 
         // Continues running until the continueGame flag is set to false.
         while(continueGame){
             // Draw card from top of the left deck
-            hand.add(takeDeck.drawCard());
-            outputFileContents.add(playerName + " draws a " + hand.get(hand.size() - 1).getValue() + " from deck " + takeDeck.getDeckID());
+            Card drawnCard = takeDeck.drawCard();
+            if(drawnCard != null){
+                hand.add(drawnCard);
+                outputFileContents.add(playerName + " draws a " + hand.get(hand.size() - 1).getValue() + " from deck " + takeDeck.getDeckID());
+            }
+            else{
+                outputFileContents.add(playerName + " attempted to draw a card from deck " + takeDeck.getDeckID() + ", but the deck was empty!");
+            }
 
             // Discard card to the bottom of the right deck
             Card removedCard = discardCard();
+            System.out.println("Player " + getPlayerId() + " discarded "
             giveDeck.addToBottom(removedCard);
             outputFileContents.add(playerName + " discards a " + removedCard.getValue() + " to deck " + giveDeck.getDeckID());
 
-            // After both the take and discard operations are complete, check if the hand is a winning hand
-            if(checkWinningHand()){
+            // After both the take and discard operations are complete, check if the hand is a winning hand (Check that the game is still on as well to prevent declaring of two winners)
+            if(checkWinningHand() && continueGame){
                 continueGame = false;
                 outputFileContents.add(playerName + " wins");
-                System.out.println(playerName + " wins");
             }
+
+            // Sleep to prevent the starvation of other player threads.
+            sleep(50);
         }
 
         // Add details of the final hand to the output when the thread is about to terminate.
@@ -133,6 +149,5 @@ public class Player extends Thread{
         outputFileContents.add(playerName + " final hand: " + getHandString());
 
         //TODO: write the contents to an actual player_output.txt file
-        // Broadcast win notification to all other threads
     }
 }
