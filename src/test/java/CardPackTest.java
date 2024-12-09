@@ -1,7 +1,5 @@
 import org.junit.Assert;
 import org.junit.Test;
-import uk.ac.exeter.cards.Card;
-import uk.ac.exeter.cards.CardPack;
 
 public class CardPackTest {
     @Test

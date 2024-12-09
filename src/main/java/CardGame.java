@@ -1,5 +1,3 @@
-package uk.ac.exeter.cards;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
