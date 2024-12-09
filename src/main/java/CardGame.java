@@ -124,16 +124,19 @@ public class CardGame {
         // That leaves us with 4n cards left (8n - 4n = 4n) as the total number of cards FOR DECKS
         // Because there is an equal number of decks to players, that means each single deck will have 4 cards (4n / n = 4)
 
-        List<Card> tempDeck = new ArrayList<>();
-
         for(int deckNum = 0; deckNum < noOfPlayers; deckNum++){
+            List<Card> tempDeck = new ArrayList<>();
             for (int i = 0; i < 4; i++){
                 // Collect 4 cards from the total deck
                 tempDeck.add(cardList.remove(0));
             }
             // Create a new deck with those 4 cards
             cardDecks.add(new CardDeck(tempDeck, deckNum + 1));
-            tempDeck.clear();
+            System.out.println("setup deck " + (cardDecks.get(cardDecks.size() - 1)).getDeckID() + " with contents " + (cardDecks.get(cardDecks.size() - 1)).getDeckString());
+        }
+
+        for(CardDeck deck : cardDecks){
+            System.out.println("initial contents of deck " + deck.getDeckID() + ": " + deck.getDeckString());
         }
 
         // PLAYER SETUP
@@ -177,10 +180,10 @@ public class CardGame {
         boolean allThreadsAlive = true;
         //Thread manager loop. This continuously checks for a thread that has completed. If so, it informs all other threads that player thread has won and stops their execution.
         while(allThreadsAlive){
-            // For each player object, check that it is still alive
+            // For each player object, check if that thread has won
             for (Player targetPlayer : playerList){
-                // If not, go through each player object and inform them that there has been a winner
-                if(!targetPlayer.isAlive()){
+                // If so, go through each player object and inform them that there has been a winner
+                if(targetPlayer.getWinState()){
                     playerList.remove(targetPlayer);
                     for (Player remainingPlayers : playerList){
                         // Declare Winner method stops the game loop in the thread from executing further, and informs them of the victor.
@@ -193,11 +196,16 @@ public class CardGame {
             }
             // Sleep to prevent starvation of the child threads.
             try{
-                Thread.sleep(50);
+                Thread.sleep(10);
             }
             catch (InterruptedException e){
                 e.printStackTrace();
             }
+        }
+
+        //Finally, get each deck to output it's final state.
+        for (CardDeck deck : cardDecks){
+            deck.writeOutput();
         }
     }
 }
