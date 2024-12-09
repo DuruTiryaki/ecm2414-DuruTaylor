@@ -127,24 +127,25 @@ public class CardGame {
         // PLAYER SETUP
         // Both playerList and cardDecks have the same length
         // Therefore, we can assign which deck is the 'take deck' and 'give deck' (decks to left and right of player respectively), by using the index.
-        // The 'give deck' (the one the player discards cards to) will have the same index as the player
-        // The 'take deck' (the one the player picks up cards from) will have the index of the player's - 1.
+        // The 'take deck' (the one the player discards cards to) will have the same index as the player
+        // The 'give deck' (the one the player picks up cards from) will have the index of the player's + 1.
         // We can then pass these through as references for manipulation by the Player threads.
 
-        // E.G ...[Player N] -> (Deck N) -> [Player 1] -> (Deck 1) -> [Player 2] -> (Deck 2) -> [Player 3] -> (Deck 3)...
+        // E.G ...(Deck N) -> [Player N] -> (Deck 1) -> [Player 1] -> (Deck 2) -> [Player 2] -> (Deck 3) -> [Player 3] -> (Deck 4)...
         // ('->' is the direction of cards, N is the number of players)
 
         // Set up Players
-        for (int playerNum = 0; playerNum < noOfPlayers; playerNum++) {
+        for(int playerNum = 0; playerNum < noOfPlayers; playerNum++){
             playerList.add(new Player(playerNum + 1));
-            playerList.get(playerNum).setGiveDeck(cardDecks.get(playerNum)); // Set the 'give deck' reference to the deck that it shares its index with
-
-            // For the first player, set its 'take deck' to be the last deck in the list
-            if (playerNum == 0) {
-                playerList.get(playerNum).setTakeDeck(cardDecks.get(cardDecks.size() - 1));
-            } else {
-                // Otherwise, set the 'take deck' to be the one immediately behind the player.
-                playerList.get(playerNum).setTakeDeck(cardDecks.get(playerNum - 1));
+            playerList.get(playerNum).setTakeDeck(cardDecks.get(playerNum)); // Set the 'take deck' reference to the deck that it shares its index with
+            
+            // For the last player, set its 'give deck' to be the first in the deck list
+            if(playerNum == noOfPlayers - 1){
+                playerList.get(playerNum).setGiveDeck(cardDecks.get(0));
+            }
+            else{
+                // Otherwise, set the 'give deck' to be the one immediately in front of the player.
+                playerList.get(playerNum).setGiveDeck(cardDecks.get(playerNum + 1));
             }
         }
 
