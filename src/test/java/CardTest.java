@@ -1,4 +1,6 @@
 import org.junit.Test;
+import uk.ac.exeter.cards.Card;
+
 import static org.junit.Assert.*;
 
 public class CardTest {

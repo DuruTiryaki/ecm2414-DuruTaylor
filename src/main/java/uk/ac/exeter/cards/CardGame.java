@@ -1,3 +1,5 @@
+package uk.ac.exeter.cards;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -14,7 +16,7 @@ public class CardGame {
         boolean fileReadFlag = false; // Flag set to true when the pack file is successfully read
 
         int noOfPlayers = 0; // Store Number of players
-        List<Player> playerList = new ArrayList<>(); // List of all Player Objects
+        List<Player> playerList = new ArrayList<>(); // List of all uk.ac.exeter.cards.Player Objects
 
         int noOfCards = 0; // Store total number of cards
         List<Card> cardList = new ArrayList<>(); // Stores cards from the pack file
@@ -99,9 +101,9 @@ public class CardGame {
         // Therefore, we can assign which deck is the 'take deck' and 'give deck' (decks to left and right of player respectively), by using the index.
         // The 'take deck' (the one the player discards cards to) will have the same index as the player
         // The 'give deck' (the one the player picks up cards from) will have the index of the player's + 1.
-        // We can then pass these through as references for manipulation by the Player threads.
+        // We can then pass these through as references for manipulation by the uk.ac.exeter.cards.Player threads.
 
-        // E.G ...(Deck N) -> [Player N] -> (Deck 1) -> [Player 1] -> (Deck 2) -> [Player 2] -> (Deck 3) -> [Player 3] -> (Deck 4)...
+        // E.G ...(Deck N) -> [uk.ac.exeter.cards.Player N] -> (Deck 1) -> [uk.ac.exeter.cards.Player 1] -> (Deck 2) -> [uk.ac.exeter.cards.Player 2] -> (Deck 3) -> [uk.ac.exeter.cards.Player 3] -> (Deck 4)...
         // ('->' is the direction of cards, N is the number of players)
 
         // Set up Players
@@ -124,7 +126,7 @@ public class CardGame {
                 targetPlayer.addCardToHand(cardList.remove(0));
             }
         }
-        //Start all Player Threads, this begins the game
+        //Start all uk.ac.exeter.cards.Player Threads, this begins the game
         for (Player targetPlayer : playerList) {
             targetPlayer.start();
         }
@@ -182,7 +184,7 @@ public class CardGame {
     }
 
     public static CardPack cardListToPack(List<Card> listOfCards) {
-        // Create Card Pack object
+        // Create uk.ac.exeter.cards.Card Pack object
         CardPack outputCardPack = new CardPack();
 
         // For each card give, add it to the pack

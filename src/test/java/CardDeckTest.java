@@ -1,5 +1,7 @@
 import org.junit.Assert;
 import org.junit.Test;
+import uk.ac.exeter.cards.Card;
+import uk.ac.exeter.cards.CardDeck;
 
 import java.util.ArrayList;
 import java.util.List;

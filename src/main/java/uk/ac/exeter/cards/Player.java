@@ -1,3 +1,5 @@
+package uk.ac.exeter.cards;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -94,7 +96,7 @@ public class Player extends Thread {
         hasWon = provisionalState;
     }
 
-    // This is called by the main method in CardGame class when a thread other than this one has won the game.
+    // This is called by the main method in uk.ac.exeter.cards.CardGame class when a thread other than this one has won the game.
     public void declareWinner(int winningPlayer) {
         // Stop the main game loop for this thread
         continueGame = false;

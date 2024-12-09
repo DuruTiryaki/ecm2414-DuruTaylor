@@ -23,4 +23,48 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <!-- Ana uygulama için JAR oluşturma -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Main-Class ekleyin -->
+                            <archive>
+                                <manifestEntries>
+                                    <Main-Class>uk.ac.exeter.cards.CardGame</Main-Class> <!-- Ana sınıfı belirtin -->
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Test JAR dosyası oluşturma -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal> <!-- Bu, test JAR dosyasını oluşturur -->
+                        </goals>
+                        <configuration>
+                            <classifier>tests</classifier> <!-- Test JAR'ına classifier ekler -->
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

@@ -21,9 +21,9 @@ class RunAllTests {
     }
 
     public static void main(String[] args) {
-        executeTest(JUnitCore.runClasses(CardTest.class), "Card");
-        executeTest(JUnitCore.runClasses(PlayerTest.class), "Player");
-        executeTest(JUnitCore.runClasses(CardDeckTest.class), "CardDeck");
-        executeTest(JUnitCore.runClasses(CardPackTest.class), "CardPack");
+        executeTest(JUnitCore.runClasses(CardTest.class), "uk.ac.exeter.cards.Card");
+        executeTest(JUnitCore.runClasses(PlayerTest.class), "uk.ac.exeter.cards.Player");
+        executeTest(JUnitCore.runClasses(CardDeckTest.class), "uk.ac.exeter.cards.CardDeck");
+        executeTest(JUnitCore.runClasses(CardPackTest.class), "uk.ac.exeter.cards.CardPack");
     }
 }
