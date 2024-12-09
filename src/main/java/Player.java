@@ -51,9 +51,12 @@ public class Player extends Thread {
                 return resultCard;
             }
         }
-
+        Card removedCard = null;
+        if (!hand.isEmpty()) {
+            removedCard = hand.remove(0);
+        }
         // Otherwise just remove and return the first card by default if all cards have the preferred denomination.
-        return hand.remove(0);
+        return removedCard;
     }
 
     // Returns human readable string for the hand
