@@ -2,9 +2,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-
 public class CardPack {
-    private List<Card> cards;
+    private final List<Card> cards;
 
     // Constructor
     public CardPack() {
@@ -20,15 +19,6 @@ public class CardPack {
         Collections.shuffle(cards);
     }
 
-    // Draws a card
-    public Card drawCard() {
-        if (!cards.isEmpty()) {
-            return cards.remove(0);
-        } else {
-            throw new IllegalStateException("Card pack is empty!");
-        }
-    }
-
     // Returns the remaining cards
     public int remainingCards() {
         return cards.size();
@@ -39,9 +29,11 @@ public class CardPack {
     }
 
     public void listCards() {
+        System.out.println("-----------------");
         System.out.println("Listing card pack:");
-        for (Card card: cards){
+        for (Card card : cards) {
             System.out.print(card.getValue() + " ");
         }
+        System.out.println("\n-----------------");
     }
 }

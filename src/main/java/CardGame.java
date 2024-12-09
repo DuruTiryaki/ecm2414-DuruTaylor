@@ -3,44 +3,12 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 public class CardGame {
-    public static boolean isFileValid(CardPack cardPack, int noOfPlayers) {
-        // file elements size  (card size) should equal to 8xnoOfPlayers
-        if (cardPack.remainingCards() != (8 * noOfPlayers)) {
-            return false;
-        }
-        // HashMap to keep track of how many times elements are repeated
-        Map<Integer, Integer> frequencyMap = new HashMap<>();
+    private static final int INITIAL_CARD_NUMBER_IN_HAND_AND_DECK = 4;
 
-        // Traverse array and increment frequency for each occurence of the relevant card in the hasmap.
-        for (Card card : cardPack.getCards()) {
-            frequencyMap.put(card.getValue(), frequencyMap.getOrDefault(card.getValue(), 0) + 1);
-        }
-
-        // If a card has a frequency of 4 or above, it is valid.
-        for (int frequency : frequencyMap.values()) {
-            if (frequency >= 4) {
-                return true; // Valid
-            }
-        }
-
-        // Otherwise, if a card does not appear 4 or more times, it is invalid.
-        return false;
-    }
-
-    public static CardPack cardListToPack(List<Card> listOfCards) {
-        // Create Card Pack object
-        CardPack outputCardPack = new CardPack();
-
-        // For each card give, add it to the pack
-        for (Card targetCard : listOfCards) {
-            outputCardPack.addCard(targetCard);
-        }
-
-        // Return that pack
-        return outputCardPack;
-    }
+    private static final int CARD_PACK_SIZE_COEFFICIENT = 8;
 
     public static void main(String[] args) {
+
         Scanner cmdReader = new Scanner(System.in); // Scanner object to handle input
         String packFileName; // Store pack file path
         boolean fileReadFlag = false; // Flag set to true when the pack file is successfully read
@@ -93,12 +61,14 @@ public class CardGame {
             }
             // Construct the total card pack
             packOfCards = cardListToPack(cardList);
+
             // Final checks to ensure the pack file is valid, before proceeding with the game
             if (fileReadFlag) {
-                System.out.println("File is not valid!");
                 fileReadFlag = isFileValid(packOfCards, noOfPlayers);
             }
         }
+        // listing the card pack.
+        packOfCards.listCards();
         // Shuffle cards
         packOfCards.shuffle();
         cardList.clear();
@@ -111,7 +81,7 @@ public class CardGame {
         // Because there is an equal number of decks to players, that means each single deck will have 4 cards (4n / n = 4)
         for (int deckNum = 0; deckNum < noOfPlayers; deckNum++) {
             List<Card> tempDeck = new ArrayList<>();
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < INITIAL_CARD_NUMBER_IN_HAND_AND_DECK; i++) {
                 // Collect 4 cards from the total deck
                 tempDeck.add(cardList.removeFirst()); // removes index of zero.
             }
@@ -119,11 +89,11 @@ public class CardGame {
             cardDecks.add(new CardDeck(tempDeck, deckNum + 1));
             System.out.println("setup deck " + (cardDecks.get(cardDecks.size() - 1)).getDeckID() + " with contents " + (cardDecks.get(cardDecks.size() - 1)).getDeckString());
         }
-
+        System.out.println("---------------");
         for (CardDeck deck : cardDecks) {
             System.out.println("initial contents of deck " + deck.getDeckID() + ": " + deck.getDeckString());
         }
-
+        System.out.println("---------------");
         // PLAYER SETUP
         // Both playerList and cardDecks have the same length
         // Therefore, we can assign which deck is the 'take deck' and 'give deck' (decks to left and right of player respectively), by using the index.
@@ -135,33 +105,29 @@ public class CardGame {
         // ('->' is the direction of cards, N is the number of players)
 
         // Set up Players
-        for(int playerNum = 0; playerNum < noOfPlayers; playerNum++){
+        for (int playerNum = 0; playerNum < noOfPlayers; playerNum++) {
             playerList.add(new Player(playerNum + 1));
             playerList.get(playerNum).setTakeDeck(cardDecks.get(playerNum)); // Set the 'take deck' reference to the deck that it shares its index with
-            
             // For the last player, set its 'give deck' to be the first in the deck list
-            if(playerNum == noOfPlayers - 1){
+            if (playerNum == noOfPlayers - 1) {
                 playerList.get(playerNum).setGiveDeck(cardDecks.get(0));
-            }
-            else{
+            } else {
                 // Otherwise, set the 'give deck' to be the one immediately in front of the player.
                 playerList.get(playerNum).setGiveDeck(cardDecks.get(playerNum + 1));
             }
         }
 
         // Each player will be given 4 cards, so do this 4 times.
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < INITIAL_CARD_NUMBER_IN_HAND_AND_DECK; i++) {
             // Traverse player list and for each player give them a card
             for (Player targetPlayer : playerList) {
                 targetPlayer.addCardToHand(cardList.remove(0));
             }
         }
-
         //Start all Player Threads, this begins the game
         for (Player targetPlayer : playerList) {
             targetPlayer.start();
         }
-
         boolean allThreadsAlive = true;
         //Thread manager loop. This continuously checks for a thread that has completed. If so, it informs all other threads that player thread has won and stops their execution.
         while (allThreadsAlive) {
@@ -190,5 +156,41 @@ public class CardGame {
         for (CardDeck deck : cardDecks) {
             deck.writeOutput();
         }
+    }
+
+    public static boolean isFileValid(CardPack cardPack, int noOfPlayers) {
+        // file elements size  (card size) should equal to 8xnoOfPlayers
+        if (cardPack.remainingCards() != (CARD_PACK_SIZE_COEFFICIENT * noOfPlayers)) {
+            System.err.println("File is not valid! Number of card size is invalid. It should be:" + (CARD_PACK_SIZE_COEFFICIENT * noOfPlayers));
+            return false;
+        }
+        // HashMap to keep track of how many times elements are repeated
+        Map<Integer, Integer> frequencyMap = new HashMap<>();
+        // Traverse array and increment frequency for each occurrence of the relevant card in the hashmap.
+        for (Card card : cardPack.getCards()) {
+            frequencyMap.put(card.getValue(), frequencyMap.getOrDefault(card.getValue(), 0) + 1);
+        }
+        // If a card has a frequency of 4 or above, it is valid.
+        for (int frequency : frequencyMap.values()) {
+            if (frequency >= INITIAL_CARD_NUMBER_IN_HAND_AND_DECK) {
+                return true; // Valid
+            }
+        }
+        // Otherwise, if a card does not appear 4 or more times, it is invalid.
+        System.err.println("There is more than one card that appears " + INITIAL_CARD_NUMBER_IN_HAND_AND_DECK + " or more times.");
+        return false;
+    }
+
+    public static CardPack cardListToPack(List<Card> listOfCards) {
+        // Create Card Pack object
+        CardPack outputCardPack = new CardPack();
+
+        // For each card give, add it to the pack
+        for (Card targetCard : listOfCards) {
+            outputCardPack.addCard(targetCard);
+        }
+
+        // Return that pack
+        return outputCardPack;
     }
 }

@@ -1,32 +1,31 @@
-import java.util.ArrayList;
-import java.util.List;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CardDeck {
-    private List<Card> cards;
-    private int deckID;
+    private final List<Card> cards;
+    private final int deckID;
 
     public CardDeck(List<Card> cards, int deckID) {
         this.cards = cards;
         this.deckID = deckID;
     }
 
-    public synchronized Card drawCard(){
-        if(!cards.isEmpty()){
+    public synchronized Card drawCard() {
+        if (!cards.isEmpty()) {
             return cards.remove(0);
-        }
-        else{
+        } else {
             return null;
         }
     }
 
-    public synchronized void addToBottom(Card card){
+    public synchronized void addToBottom(Card card) {
         cards.add(card);
     }
 
-    public int getDeckID(){
+    public int getDeckID() {
         return deckID;
     }
 
@@ -44,7 +43,7 @@ public class CardDeck {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("deck" + deckID + "_output.txt"))) {
             writer.write("deck" + deckID + " contents: " + getDeckString());
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error is occurred while writing output to the file. Detail: " + e.getMessage());
         }
     }
 }
